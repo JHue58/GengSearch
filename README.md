@@ -18,4 +18,4 @@
 
 
 
-由于<code>小鸡词典</code>在访问次数过多后需要登录，请先至官网注册并登录后获取cookie字符串填入<code>cookie.txt</code>文件中，没有cookie插件将无法运行
+由于<code>小鸡词典</code>在访问次数过多后需要登录，请先至[官网](https://jikipedia.com/)注册并登录后获取cookie字符串填入<code>cookie.txt</code>文件中，没有cookie插件将无法运行
