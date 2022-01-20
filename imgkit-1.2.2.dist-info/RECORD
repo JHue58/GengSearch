@@ -1,0 +1,17 @@
+imgkit-1.2.2.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+imgkit-1.2.2.dist-info/LICENSE,sha256=O2kzyDmbDn8Q4edAT5GlEkw8b--KdZK7MCpyyFCpI-I,1070
+imgkit-1.2.2.dist-info/METADATA,sha256=aUM1M5-XmzTdf0y2swTS3R9SP4nK55kGnuC45WejfSc,8161
+imgkit-1.2.2.dist-info/RECORD,,
+imgkit-1.2.2.dist-info/REQUESTED,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
+imgkit-1.2.2.dist-info/WHEEL,sha256=OqRkF0eY5GHssMorFjlbTIq072vpHpF60fIQA6lS9xA,92
+imgkit-1.2.2.dist-info/top_level.txt,sha256=klCHbpmqhTb8qP3l3qq6vl2jNWkVbGtBpPYJQ6D0Tzc,7
+imgkit/__init__.py,sha256=iv_scUFkic3afwfdwmf-DydGPkPo670bmkvsAqDcWFc,336
+imgkit/__pycache__/__init__.cpython-39.pyc,,
+imgkit/__pycache__/api.cpython-39.pyc,,
+imgkit/__pycache__/config.cpython-39.pyc,,
+imgkit/__pycache__/imgkit.cpython-39.pyc,,
+imgkit/__pycache__/source.cpython-39.pyc,,
+imgkit/api.py,sha256=5NDzYYpFRj3hj08c7RfH32VppbJmcH_weyNBpt45KU0,3412
+imgkit/config.py,sha256=SgE_7kTgb6amcEtFFScY4RbGILchgqH_s-lIkFXkxX0,3250
+imgkit/imgkit.py,sha256=FsEJxQWgRuxan4Uu_Q_i72fILmmXBRXIISlYKRQkgdw,9657
+imgkit/source.py,sha256=wc4V0Bnp867t2xnHUCcSovD8RDvc4gLF_T4q7DAt-8k,1452
