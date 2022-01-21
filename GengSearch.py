@@ -76,6 +76,8 @@ def Search(Searchinfo):
         title='<center>'+title+'</center>'
         body=str(body)
         img=str(img)
+        if img.find('show image button image')==-1:
+            img=''        
         img='<center>'+img+'</center>'
         headfile=open('head.html','r',encoding='utf-8')
         head=headfile.read()
