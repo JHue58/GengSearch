@@ -25,3 +25,26 @@
 Windows用户点击<code>GengSearch.exe</code>运行
 
 Linux用户可通过执行<code>GengSearch.py</code>脚本运行
+
+
+
+<code>seting.json</code>文件说明：
+
+```json
+{
+"senddaily":  //每日发送
+{
+"switch":"0",  //1为开启
+"hour":"8",   //发送小时(整点)
+"sendlist":[],  //发送的群，有多个群用,隔开
+"text":"每日一梗，带你了解新知识！" //前置文本
+},
+"blacklist":  //黑名单
+{
+"switch":"0", //1为开启
+"group":[],   //黑名单群，有多个群用,隔开
+"member":[]   //黑名单QQ号，有多个用,隔开
+}
+}
+```
+
