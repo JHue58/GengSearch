@@ -101,10 +101,10 @@ def Search(Searchinfo):
         print('Error')
         log(target=Searchgroup,mebmerID=Searchsender)
     finally:
-        print('\nListing……')
+        print('\nListening……')
 
-def Listing(data,blacklist=0):
-    #print('listing...')
+def Listening(data,blacklist=0):
+    #print('Listening...')
     try:
         message=simuse.Fetch_Message(data)
     except:
@@ -147,9 +147,9 @@ def GengSearch(data,seting):
     SearchList=[]
     blacklist=seting['blacklist']
     if str(blacklist['switch'])==str(1):
-        SearchList=Listing(data,blacklist)
+        SearchList=Listening(data,blacklist)
     else:
-        SearchList=Listing(data)
+        SearchList=Listening(data)
     #print(SearchList)
     SearchListcheck=[]
     if SearchList!=SearchListcheck:
@@ -184,6 +184,7 @@ def Checkset(seting):
     
 def Senddaily(data,senddaily):
     hours=time.strftime("%H", time.localtime())
+    days=time.strftime("%d", time.localtime())
     if str(senddaily['hour'])==hours :
         for i in senddaily['sendlist']:
             Searchdict={}
@@ -195,6 +196,7 @@ def Senddaily(data,senddaily):
             imgpath=os.getcwd()
             imgpath=imgpath+r'\\temp\\Searchinfo_img.jpg'
             simuse.Send_Message(data,i,1,imgpath,2,path=1)
+        return days
 
 def main():
     data=simuse.Get_data()
@@ -204,15 +206,14 @@ def main():
     Checkset(seting)
     print(data)
     print('data Get Success')
-    print('Listing……')
+    print('Listening……')
     daysign=None
     while 1:
         senddaily=seting['senddaily']
         if str(senddaily['switch'])==str(1):
             day=time.strftime("%d", time.localtime())
             if day!=daysign:
-                Senddaily(data,seting['senddaily'])
-                daysign=day
+                daysign=Senddaily(data,seting['senddaily'])              
         GengSearch(data,seting)
         time.sleep(2)
 
