@@ -27,9 +27,15 @@ def log(SearchUrl='Error',infoUrl='Error',runingtime=0,target='None',mebmerID='N
   
 def Search(Searchinfo):
     try:
+        Searchsign=1
         print('Get mission')
         start=time.perf_counter()
-        cookiefile=open('cookie.txt','r',encoding='utf-8')
+        try:
+            cookiefile=open('cookie.txt','r',encoding='utf-8')
+        except:
+            print('cookie文件打开错误')
+            log(target='cookie文件打开错误')
+            Searchsign=0
         cookie=cookiefile.read()
         cookiefile.close()
         #print(cookie)
@@ -44,28 +50,48 @@ def Search(Searchinfo):
         Searchinfo=Searchinfo['Searchkey']
         SearchUrl=SearchUrl+Searchinfo
         SearchUrl=SearchUrl+'&category=definition'
-        Searchlist=requests.get(SearchUrl,cookies=cookie)
-        Searchlist=Searchlist.text
+        try:
+            Searchlist=requests.get(SearchUrl,cookies=cookie)
+            Searchlist=Searchlist.text
+        except:
+            print('搜索请求错误/超时')
+            log(target='搜索请求错误/超时')
+            Searchsign=0
         #print(type(Searchlist))
-        Searchhtmlfile=open('temp/Searchlist.html','w',encoding='utf-8')
-        Searchhtmlfile.write(Searchlist)
-        Searchhtmlfile.close()
-        idnum=Searchlist.find('div data-id=')
-        #print(idnum)
-        idnum1=Searchlist.find('"',idnum)
-        #print(idnum1)
-        idnum1+=1
-        idnum2=Searchlist.find('"',idnum1)
-        #print(idnum2)
-        idnum1=int(idnum1)
-        idnum2=int(idnum2)
+        try:
+            Searchhtmlfile=open('temp/Searchlist.html','w',encoding='utf-8')
+            Searchhtmlfile.write(Searchlist)
+            Searchhtmlfile.close()
+        except:
+            print('搜索列表保存错误')
+            log(target='搜索列表保存错误')
+            Searchsign=0
+        try:
+            idnum=Searchlist.find('div data-id=')
+            #print(idnum)
+            idnum1=Searchlist.find('"',idnum)
+            #print(idnum1)
+            idnum1+=1
+            idnum2=Searchlist.find('"',idnum1)
+            #print(idnum2)
+            idnum1=int(idnum1)
+            idnum2=int(idnum2)
+        except:
+            print('无法定位到搜索列表的首个词条ID')
+            log(target='无法定位到搜索列表的首个词条ID')
+            Searchsign=0
         Searchid=Searchlist[idnum1:idnum2]
         print('Searchid:',Searchid)
         infoUrl='https://jikipedia.com/definition/'
         infoUrl=infoUrl+Searchid
         print('infoUrl:',infoUrl)
-        infolist=requests.get(infoUrl,cookies=cookie)
-        infolist=infolist.text
+        try:
+            infolist=requests.get(infoUrl,cookies=cookie)
+            infolist=infolist.text
+        except:
+            print('词条页面打开错误/请求超时')
+            log(target='词条页面打开错误/请求超时')
+            Searchsign=0
         soup = BeautifulSoup(infolist, "lxml")
         title=soup.select('.title-container')[0]
         body=soup.select('.content')[0]
@@ -80,18 +106,33 @@ def Search(Searchinfo):
         if img.find('show image button image')==-1:
             img=''        
         img='<center>'+img+'</center>'
-        headfile=open('head.html','r',encoding='utf-8')
-        head=headfile.read()
-        headfile.close()
+        try:
+            headfile=open('head.html','r',encoding='utf-8')
+            head=headfile.read()
+            headfile.close()
+        except:
+            print('未找到head文件')
+            log(target='未找到head文件')
+            Searchsign=0
         head=head+'\n'
         html=head+title+'\n'+body+'\n'+img+'\n'
         #print(html)
-        htmlfile=open('temp/Searchinfo.html','w',encoding='utf-8')
-        htmlfile.write(html)
-        htmlfile.close()
+        try:
+            htmlfile=open('temp/Searchinfo.html','w',encoding='utf-8')
+            htmlfile.write(html)
+            htmlfile.close()
+        except:
+            print('词条页面保存错误')
+            log(target='词条页面保存错误')
+            Searchsign=0
         path_wkimg='wkhtmltopdf/bin/wkhtmltoimage.exe'
-        cfg = imgkit.config(wkhtmltoimage=path_wkimg)
-        imgkit.from_file('temp/Searchinfo.html', 'temp/Searchinfo_img.jpg', config=cfg)
+        try:
+            cfg = imgkit.config(wkhtmltoimage=path_wkimg)
+            imgkit.from_file('temp/Searchinfo.html', 'temp/Searchinfo_img.jpg', config=cfg)
+        except:
+            print('html转换图片错误')
+            log(target='html转换图片错误')
+            Searchsign=0
         end = time.perf_counter()
         runingtime=end-start
         print('Success')
@@ -100,8 +141,10 @@ def Search(Searchinfo):
     except:
         print('Error')
         log(target=Searchgroup,mebmerID=Searchsender)
+        Searchsign=0
     finally:
         print('\nListening……')
+        return Searchsign
 
 def Listening(data,blacklist=0):
     #print('Listening...')
@@ -154,10 +197,11 @@ def GengSearch(data,seting):
     SearchListcheck=[]
     if SearchList!=SearchListcheck:
         for i in SearchList:
-            Search(i)
+            Searchsign=Search(i)
             imgpath=os.getcwd()
             imgpath=imgpath+r'\\temp\\Searchinfo_img.jpg'
-            simuse.Send_Message(data,i['Searchgroup'],1,imgpath,2,path=1)
+            if Searchsign==1:
+                simuse.Send_Message(data,i['Searchgroup'],1,imgpath,2,path=1)
 
 def GetSeting():
     setingfile=open('seting.json','r',encoding='utf-8')
@@ -185,7 +229,7 @@ def Checkset(seting):
 def Senddaily(data,senddaily):
     hours=time.strftime("%H", time.localtime())
     days=time.strftime("%d", time.localtime())
-    if str(senddaily['hour'])==hours :
+    if str(senddaily['hour']).zfill(2)==hours :
         for i in senddaily['sendlist']:
             Searchdict={}
             Searchdict.update(Searchkey=' ')
