@@ -8,6 +8,7 @@ import simuse
 import os
 import json
 
+
 def log(SearchUrl='Error',infoUrl='Error',runingtime=0,target='None',mebmerID='None'):
     date=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     target=str(target)
@@ -92,6 +93,23 @@ def Search(Searchinfo):
             print('词条页面打开错误/请求超时')
             log(target='词条页面打开错误/请求超时')
             Searchsign=0
+        try:
+            stylenum1=infolist.find('<style')
+            stylenum2=infolist.find('</style')
+            stylehtml=infolist[stylenum1:stylenum2+8]
+        except:
+            print('页面样式(style)获取失败')
+            log(target='页面样式(style)获取失败')
+            Searchsign=0
+        try:
+            stylefile=open('temp/head.html','w',encoding='utf-8')
+            stylehtml='<meta charset="UTF-8">'+'\n'+stylehtml
+            stylefile.write(stylehtml)
+            stylefile.close()
+        except:
+            print('head文件保存失败')
+            log(target='head文件保存失败')
+            Searchsign=0            
         soup = BeautifulSoup(infolist, "lxml")
         title=soup.select('.title-container')[0]
         body=soup.select('.content')[0]
@@ -107,7 +125,7 @@ def Search(Searchinfo):
             img=''        
         img='<center>'+img+'</center>'
         try:
-            headfile=open('head.html','r',encoding='utf-8')
+            headfile=open('temp/head.html','r',encoding='utf-8')
             head=headfile.read()
             headfile.close()
         except:
