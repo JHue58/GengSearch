@@ -32,7 +32,7 @@ def Search(Searchinfo):
         print('Get mission')
         start=time.perf_counter()
         try:
-            cookiefile=open('cookie.txt','r',encoding='utf-8')
+            cookiefile=open('cookie.txt','r',encoding='utf-8-sig')
         except:
             print('cookie文件打开错误')
             log(target='cookie文件打开错误')
@@ -222,7 +222,7 @@ def GengSearch(data,seting):
                 simuse.Send_Message(data,i['Searchgroup'],1,imgpath,2,path=1)
 
 def GetSeting():
-    setingfile=open('seting.json','r',encoding='utf-8')
+    setingfile=open('seting.json','r',encoding='utf-8-sig')
     seting=setingfile.read()
     seting=json.loads(seting)
     return seting
