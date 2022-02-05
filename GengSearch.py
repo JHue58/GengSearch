@@ -1,5 +1,3 @@
-from email import message
-import ssl
 from bs4 import BeautifulSoup
 import imgkit
 import requests
@@ -7,7 +5,34 @@ import time
 import simuse
 import os
 import json
+import traceback
+import platform
 
+
+class platform():
+    plat=platform.system()
+    def wkimgpath(self):
+        if self.plat=='Windows':
+            wkimgpath='wkhtmltopdf/bin/wkhtmltoimage.exe'
+        else:
+            wkimgpath='wkhtmltopdf/local/bin/wkhtmltoimage'
+        #print(wkimgpath)
+        return wkimgpath
+    def imgpath(self):
+        if self.plat=='Windows':
+            imgpath=os.getcwd()
+            imgpath=imgpath+r'\\temp\\Searchinfo_img.jpg'
+        else:
+            imgpath=os.path.dirname(os.path.realpath(__file__))
+            imgpath=imgpath+'/temp/Searchinfo_img.jpg'
+        #print(imgpath)
+        return imgpath
+
+def DelError(Errortitle,Errortext):
+    print(Errortitle)
+    print('错误详情:')
+    print(Errortext)
+    log(target=Errortitle,mebmerID=Errortext)
 
 def log(SearchUrl='Error',infoUrl='Error',runingtime=0,target='None',mebmerID='None'):
     date=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -26,7 +51,7 @@ def log(SearchUrl='Error',infoUrl='Error',runingtime=0,target='None',mebmerID='N
     logfile.close()
     print('save log')
   
-def Search(Searchinfo):
+def Search(Searchinfo,plat):
     try:
         Searchsign=1
         print('Get mission')
@@ -34,8 +59,7 @@ def Search(Searchinfo):
         try:
             cookiefile=open('cookie.txt','r',encoding='utf-8-sig')
         except:
-            print('cookie文件打开错误')
-            log(target='cookie文件打开错误')
+            DelError('cookie文件打开错误',traceback.format_exc())
             Searchsign=0
         cookie=cookiefile.read()
         cookiefile.close()
@@ -55,8 +79,7 @@ def Search(Searchinfo):
             Searchlist=requests.get(SearchUrl,cookies=cookie)
             Searchlist=Searchlist.text
         except:
-            print('搜索请求错误/超时')
-            log(target='搜索请求错误/超时')
+            DelError('搜索请求错误/超时',traceback.format_exc())            
             Searchsign=0
         #print(type(Searchlist))
         try:
@@ -64,8 +87,7 @@ def Search(Searchinfo):
             Searchhtmlfile.write(Searchlist)
             Searchhtmlfile.close()
         except:
-            print('搜索列表保存错误')
-            log(target='搜索列表保存错误')
+            DelError('搜索列表保存错误',traceback.format_exc()) 
             Searchsign=0
         try:
             idnum=Searchlist.find('div data-id=')
@@ -78,8 +100,7 @@ def Search(Searchinfo):
             idnum1=int(idnum1)
             idnum2=int(idnum2)
         except:
-            print('无法定位到搜索列表的首个词条ID')
-            log(target='无法定位到搜索列表的首个词条ID')
+            DelError('无法定位到搜索列表的首个词条ID',traceback.format_exc()) 
             Searchsign=0
         Searchid=Searchlist[idnum1:idnum2]
         print('Searchid:',Searchid)
@@ -90,16 +111,14 @@ def Search(Searchinfo):
             infolist=requests.get(infoUrl,cookies=cookie)
             infolist=infolist.text
         except:
-            print('词条页面打开错误/请求超时')
-            log(target='词条页面打开错误/请求超时')
+            DelError('词条页面打开错误/请求超时',traceback.format_exc())
             Searchsign=0
         try:
             stylenum1=infolist.find('<style')
             stylenum2=infolist.find('</style')
             stylehtml=infolist[stylenum1:stylenum2+8]
         except:
-            print('页面样式(style)获取失败')
-            log(target='页面样式(style)获取失败')
+            DelError('页面样式(style)获取失败',traceback.format_exc())
             Searchsign=0
         try:
             stylefile=open('temp/head.html','w',encoding='utf-8')
@@ -107,8 +126,7 @@ def Search(Searchinfo):
             stylefile.write(stylehtml)
             stylefile.close()
         except:
-            print('head文件保存失败')
-            log(target='head文件保存失败')
+            DelError('head文件保存失败',traceback.format_exc())
             Searchsign=0            
         soup = BeautifulSoup(infolist, "lxml")
         title=soup.select('.title-container')[0]
@@ -129,8 +147,7 @@ def Search(Searchinfo):
             head=headfile.read()
             headfile.close()
         except:
-            print('未找到head文件')
-            log(target='未找到head文件')
+            DelError('未找到head文件',traceback.format_exc())
             Searchsign=0
         head=head+'\n'
         html=head+title+'\n'+body+'\n'+img+'\n'
@@ -140,36 +157,35 @@ def Search(Searchinfo):
             htmlfile.write(html)
             htmlfile.close()
         except:
-            print('词条页面保存错误')
-            log(target='词条页面保存错误')
+            DelError('词条页面保存错误',traceback.format_exc())
             Searchsign=0
-        path_wkimg='wkhtmltopdf/bin/wkhtmltoimage.exe'
+        path_wkimg=plat.wkimgpath()
         try:
             cfg = imgkit.config(wkhtmltoimage=path_wkimg)
             imgkit.from_file('temp/Searchinfo.html', 'temp/Searchinfo_img.jpg', config=cfg)
         except:
-            print('html转换图片错误')
-            log(target='html转换图片错误')
+            DelError('html转换图片错误',traceback.format_exc())
             Searchsign=0
         end = time.perf_counter()
         runingtime=end-start
-        print('Success')
-        print('RuningTime:',runingtime)
+        if Searchsign!=0:
+            print('Success')
+            print('RuningTime:',runingtime)
         log(SearchUrl,infoUrl,runingtime,Searchgroup,Searchsender)
     except:
-        print('Error')
+        DelError('Error',traceback.format_exc())
         log(target=Searchgroup,mebmerID=Searchsender)
         Searchsign=0
     finally:
         print('\nListening……')
         return Searchsign
 
-def Listening(data,blacklist=0):
+def Listening(data,tritext,blacklist=0):
     #print('Listening...')
     try:
         message=simuse.Fetch_Message(data)
     except:
-        print('Mirai未运行或未配置mah插件')
+        DelError('Mirai未运行或未配置mah插件',traceback.format_exc())
         os.system('pause')
     SearchList=[]
     Searchdict={}
@@ -191,33 +207,40 @@ def Listening(data,blacklist=0):
                 for k in blacklist['member']:
                     if str(k)==str(i['sender']):
                         sign=0
-        if checktext[:4]=='梗查询 ' and sign==1:
-            Searchdict.update(Searchkey=checktext[4:])
-            Searchdict.update(Searchsender=i['sender'])
-            Searchdict.update(Searchgroup=i['group'])
-            SearchList.append(Searchdict.copy())
-        elif checktext=='来点梗' and sign==1:
-            Searchdict.update(Searchkey=' ')
-            Searchdict.update(Searchsender=i['sender'])
-            Searchdict.update(Searchgroup=i['group'])
-            SearchList.append(Searchdict.copy())            
+        for j in tritext['searchtext']:
+            if checktext[:len(j)]==j and sign==1:
+                Searchdict.update(Searchkey=checktext[4:])
+                Searchdict.update(Searchsender=i['sender'])
+                Searchdict.update(Searchgroup=i['group'])
+                SearchList.append(Searchdict.copy())
+                sign=0
+                break
+            else:
+                for k in tritext['randomtext']:
+                    if checktext==k and sign==1:
+                        Searchdict.update(Searchkey=' ')
+                        Searchdict.update(Searchsender=i['sender'])
+                        Searchdict.update(Searchgroup=i['group'])
+                        SearchList.append(Searchdict.copy())
+                        sign=0
+                        break            
     #print(SearchList)
     return SearchList        
 
-def GengSearch(data,seting):
+def GengSearch(data,seting,plat):
     SearchList=[]
     blacklist=seting['blacklist']
+    tritext=seting['tritext']
     if str(blacklist['switch'])==str(1):
-        SearchList=Listening(data,blacklist)
+        SearchList=Listening(data,tritext,blacklist)
     else:
-        SearchList=Listening(data)
+        SearchList=Listening(data,tritext)
     #print(SearchList)
     SearchListcheck=[]
     if SearchList!=SearchListcheck:
         for i in SearchList:
-            Searchsign=Search(i)
-            imgpath=os.getcwd()
-            imgpath=imgpath+r'\\temp\\Searchinfo_img.jpg'
+            Searchsign=Search(i,plat)
+            imgpath=plat.imgpath()
             if Searchsign==1:
                 simuse.Send_Message(data,i['Searchgroup'],1,imgpath,2,path=1)
 
@@ -230,6 +253,10 @@ def GetSeting():
 def Checkset(seting):
     senddaily=seting['senddaily']
     blacklist=seting['blacklist']
+    tritext=seting['tritext']
+    if len(tritext['searchtext'])==0 or len(tritext['randomtext'])==0:
+        print("触发文本未配置")
+        exit(0)
     if str(senddaily['switch'])==str(1):
         print('已开启每日梗发送')
         print('文本：',senddaily['text'])
@@ -243,6 +270,9 @@ def Checkset(seting):
         print('黑名单列表(成员)：',blacklist['member'])
     else:
         print('未开启黑名单模式')
+    print('查询触发文本:')
+    print(tritext['searchtext'])
+    print(tritext['randomtext'])
     
 def Senddaily(data,senddaily):
     hours=time.strftime("%H", time.localtime())
@@ -261,6 +291,8 @@ def Senddaily(data,senddaily):
         return days
 
 def main():
+    plat=platform()
+    print("running from",plat.plat)
     data=simuse.Get_data()
     #print(data)
     data=simuse.Get_Session(data)
@@ -276,8 +308,8 @@ def main():
             day=time.strftime("%d", time.localtime())
             if day!=daysign:
                 daysign=Senddaily(data,seting['senddaily'])              
-        GengSearch(data,seting)
-        time.sleep(2)
+        GengSearch(data,seting,plat)
+        time.sleep(1)
 
         
 main()

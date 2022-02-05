@@ -1,4 +1,5 @@
 {
 "senddaily":{"switch":"0","hour":"8","sendlist":[],"text":"每日一梗，带你了解新知识！"},
-"blacklist":{"switch":"0","group":[],"member":[]}
+"blacklist":{"switch":"0","group":[],"member":[]},
+"tritext":{"searchtext":["梗查询 "],"randomtext":["来点梗"]}
 }

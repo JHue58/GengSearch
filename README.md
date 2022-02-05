@@ -44,7 +44,22 @@ Linux用户可通过执行<code>GengSearch.py</code>脚本运行
 "switch":"0", //1为开启
 "group":[],   //黑名单群，有多个群用,隔开
 "member":[]   //黑名单QQ号，有多个用,隔开
+},
+"tritext":  //触发文本
+{
+"searchtext":["梗查询 "],  //查询的触发文本，有多个用,隔开(文本必须带上双引号！！)
+"randomtext":["来点梗"]  //随机梗的触发文本，有多个用,隔开(文本必须带上双引号！！)
+    					//例：["梗查询 ","查梗 "]
 }
 }
 ```
 
+
+
+### Linux用户注意事项
+
+Linux用户在运行时可能会出现缺少<code>wkhtmltopdf</code>所需**运行库**的问题
+
+可以通过<code>yum</code>指令安装所需的**运行库**或在[wkhtmltopdf官网](https://wkhtmltopdf.org/downloads.html)下载对应的镜像安装
+
+若出现**文字乱码或方块**的现象，请下载[字体库](https://www.yii666.com/Uploads/wkhtmltopdf_fonts.zip)并解压至**/usr/share/fonts**目录下

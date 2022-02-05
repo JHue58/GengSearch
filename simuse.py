@@ -2,7 +2,7 @@ import requests as r,json,time
 
 #取得数据包
 def Get_data():
-    data_file=open(r'data.json','r',encoding='utf-8')
+    data_file=open(r'data.json','r',encoding='utf-8-sig')
     data=data_file.read()
     data=json.loads(data)
     return data 
