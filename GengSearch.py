@@ -274,7 +274,7 @@ def Checkset(seting):
     print(tritext['searchtext'])
     print(tritext['randomtext'])
     
-def Senddaily(data,senddaily):
+def Senddaily(data,plat,senddaily):
     hours=time.strftime("%H", time.localtime())
     days=time.strftime("%d", time.localtime())
     if str(senddaily['hour']).zfill(2)==hours :
@@ -283,10 +283,9 @@ def Senddaily(data,senddaily):
             Searchdict.update(Searchkey=' ')
             Searchdict.update(Searchsender='None')
             Searchdict.update(Searchgroup=i)
-            Search(Searchdict)
+            Search(Searchdict,plat)
             simuse.Send_Message(data,i,1,senddaily['text'],1)
-            imgpath=os.getcwd()
-            imgpath=imgpath+r'\\temp\\Searchinfo_img.jpg'
+            imgpath=plat.imgpath()
             simuse.Send_Message(data,i,1,imgpath,2,path=1)
         return days
 
@@ -307,7 +306,7 @@ def main():
         if str(senddaily['switch'])==str(1):
             day=time.strftime("%d", time.localtime())
             if day!=daysign:
-                daysign=Senddaily(data,seting['senddaily'])              
+                daysign=Senddaily(data,plat,seting['senddaily'])              
         GengSearch(data,seting,plat)
         time.sleep(1)
 
