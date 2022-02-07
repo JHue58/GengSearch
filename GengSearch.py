@@ -209,7 +209,7 @@ def Listening(data,tritext,blacklist=0):
                         sign=0
         for j in tritext['searchtext']:
             if checktext[:len(j)]==j and sign==1:
-                Searchdict.update(Searchkey=checktext[4:])
+                Searchdict.update(Searchkey=checktext[len(j):])
                 Searchdict.update(Searchsender=i['sender'])
                 Searchdict.update(Searchgroup=i['group'])
                 SearchList.append(Searchdict.copy())
