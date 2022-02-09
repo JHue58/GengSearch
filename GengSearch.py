@@ -7,7 +7,7 @@ import os
 import json
 import traceback
 import platform
-
+print('Version 1.3.0')
 
 class platform():
     plat=platform.system()
@@ -27,6 +27,47 @@ class platform():
             imgpath=imgpath+'/temp/Searchinfo_img.jpg'
         #print(imgpath)
         return imgpath
+
+class rescontrol():
+    groupcontrol={}
+    membercontrol={}
+    def addgroup(self,group):
+        self.groupcontrol[group]=int(time.time())
+    def addmember(self,member):
+        self.membercontrol[member]=int(time.time())
+    def timegroup(self,group):
+        if group in self.groupcontrol.keys():
+            nowtime=int(time.time())
+            subtime=nowtime-self.groupcontrol[group]
+            return subtime
+        else:
+            return -1
+    def timemember(self,member):
+        if member in self.membercontrol.keys():
+            nowtime=int(time.time())
+            subtime=nowtime-self.membercontrol[member]
+            return subtime
+        else:
+            return -1
+    def sendgrouptext(self,data,group,rescontrol):
+        grouptext=rescontrol['grouptext']
+        simuse.Send_Message(data,group,1,grouptext,1)
+    def sendmembertext(self,data,group,member,rescontrol):
+        membertext=rescontrol['membertext']
+        subtime=int(rescontrol['member'])-self.timemember(member)
+        subtime=str(subtime)
+        membertext=membertext.replace('{}',subtime)
+        messagechain=[]
+        messageinfo1={'type':'At','display':''}
+        messageinfo1['target']=member
+        messageinfo2={'type':'Plain'}
+        messageinfo2['text']='\n'+membertext
+        messagechain.append(messageinfo1.copy())
+        messagechain.append(messageinfo2.copy())
+        simuse.Send_Message_Chain(data,group,1,messagechain)
+
+
+        
 
 def DelError(Errortitle,Errortext):
     print(Errortitle)
@@ -52,6 +93,7 @@ def log(SearchUrl='Error',infoUrl='Error',runingtime=0,target='None',mebmerID='N
     print('save log')
   
 def Search(Searchinfo,plat):
+    global control
     try:
         Searchsign=1
         print('Get mission')
@@ -170,6 +212,8 @@ def Search(Searchinfo,plat):
         runingtime=end-start
         if Searchsign!=0:
             print('Success')
+            control.addgroup(Searchgroup)  #记录该群时间戳
+            control.addmember(Searchsender) #记录该成员时间戳
             print('RuningTime:',runingtime)
         log(SearchUrl,infoUrl,runingtime,Searchgroup,Searchsender)
     except:
@@ -180,10 +224,14 @@ def Search(Searchinfo,plat):
         print('\nListening……')
         return Searchsign
 
-def Listening(data,tritext,blacklist=0):
+def Listening(data,seting,blacklist=0):
     #print('Listening...')
+    global control
+    tritext=seting['tritext']
+    rescontrol=seting['rescontrol']
     try:
         message=simuse.Fetch_Message(data)
+        #print(message)
     except:
         DelError('Mirai未运行或未配置mah插件',traceback.format_exc())
         os.system('pause')
@@ -208,33 +256,50 @@ def Listening(data,tritext,blacklist=0):
                     if str(k)==str(i['sender']):
                         sign=0
         for j in tritext['searchtext']:
-            if checktext[:len(j)]==j and sign==1:
-                Searchdict.update(Searchkey=checktext[len(j):])
-                Searchdict.update(Searchsender=i['sender'])
-                Searchdict.update(Searchgroup=i['group'])
-                SearchList.append(Searchdict.copy())
-                sign=0
-                break
+            if checktext[:len(j)]==j:
+                if control.timegroup(i['group'])<=int(rescontrol['group']) and control.timegroup(i['group'])!=-1 and sign==1:
+                    sign=0
+                    control.sendgrouptext(data,i['group'],rescontrol)
+                    log(SearchUrl='群搜索次数限制',infoUrl='群搜索次数限制',runingtime=0,target=i['group'],mebmerID=i['sender'])
+                elif control.timemember(i['sender'])<=int(rescontrol['member']) and control.timemember(i['sender'])!=-1 and sign==1:
+                    sign=0
+                    control.sendmembertext(data,i['group'],i['sender'],rescontrol)
+                    log(SearchUrl='群成员搜索次数限制',infoUrl='群成员搜索次数限制',runingtime=0,target=i['group'],mebmerID=i['sender'])
+                if sign==1:
+                    Searchdict.update(Searchkey=checktext[len(j):])
+                    Searchdict.update(Searchsender=i['sender'])
+                    Searchdict.update(Searchgroup=i['group'])
+                    SearchList.append(Searchdict.copy())
+                    sign=0
+                    break
             else:
                 for k in tritext['randomtext']:
-                    if checktext==k and sign==1:
-                        Searchdict.update(Searchkey=' ')
-                        Searchdict.update(Searchsender=i['sender'])
-                        Searchdict.update(Searchgroup=i['group'])
-                        SearchList.append(Searchdict.copy())
-                        sign=0
-                        break            
+                    if checktext==k:
+                        if control.timegroup(i['group'])<=int(rescontrol['group']) and control.timegroup(i['group'])!=-1 and sign==1:
+                            sign=0
+                            control.sendgrouptext(data,i['group'],rescontrol)
+                            log(SearchUrl='群搜索次数限制',infoUrl='群搜索次数限制',runingtime=0,target=i['group'],mebmerID=i['sender'])
+                        elif control.timemember(i['sender'])<=int(rescontrol['member']) and control.timemember(i['sender'])!=-1 and sign==1:
+                            sign=0
+                            control.sendmembertext(data,i['group'],i['sender'],rescontrol)
+                            log(SearchUrl='群成员搜索次数限制',infoUrl='群成员搜索次数限制',runingtime=0,target=i['group'],mebmerID=i['sender'])
+                        if sign==1:
+                            Searchdict.update(Searchkey=' ')
+                            Searchdict.update(Searchsender=i['sender'])
+                            Searchdict.update(Searchgroup=i['group'])
+                            SearchList.append(Searchdict.copy())
+                            sign=0
+                            break            
     #print(SearchList)
     return SearchList        
 
 def GengSearch(data,seting,plat):
     SearchList=[]
     blacklist=seting['blacklist']
-    tritext=seting['tritext']
     if str(blacklist['switch'])==str(1):
-        SearchList=Listening(data,tritext,blacklist)
+        SearchList=Listening(data,seting,blacklist)
     else:
-        SearchList=Listening(data,tritext)
+        SearchList=Listening(data,seting)
     #print(SearchList)
     SearchListcheck=[]
     if SearchList!=SearchListcheck:
@@ -254,6 +319,7 @@ def Checkset(seting):
     senddaily=seting['senddaily']
     blacklist=seting['blacklist']
     tritext=seting['tritext']
+    rescontrol=seting['rescontrol']
     if len(tritext['searchtext'])==0 or len(tritext['randomtext'])==0:
         print("触发文本未配置")
         exit(0)
@@ -273,6 +339,8 @@ def Checkset(seting):
     print('查询触发文本:')
     print(tritext['searchtext'])
     print(tritext['randomtext'])
+    print('群冷却时间:',rescontrol['group'],'秒   文本:',rescontrol['grouptext'])
+    print('群成员冷却时间:',rescontrol['member'],'秒   文本:',rescontrol['membertext'])
     
 def Senddaily(data,plat,senddaily):
     hours=time.strftime("%H", time.localtime())
@@ -310,7 +378,7 @@ def main():
         GengSearch(data,seting,plat)
         time.sleep(1)
 
-        
+control=rescontrol()  
 main()
 
 

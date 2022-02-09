@@ -1,5 +1,6 @@
 {
 "senddaily":{"switch":"0","hour":"8","sendlist":[],"text":"每日一梗，带你了解新知识！"},
 "blacklist":{"switch":"0","group":[],"member":[]},
-"tritext":{"searchtext":["梗查询 "],"randomtext":["来点梗"]}
+"tritext":{"searchtext":["梗查询 "],"randomtext":["来点梗"]},
+"rescontrol":{"group":"10","member":"30","grouptext":"让我休息一下嘛！","membertext":"你搜的太快啦！{}秒后再来试试吧"}
 }
