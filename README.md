@@ -2,7 +2,7 @@
 
 本插件的运行基于<code>mirai-api-http</code>，使用前请先下载[mirai-api-http](https://github.com/project-mirai/mirai-api-http)并完成配置
 
-在<code>data.json</code>文件中填入<code>mirai-api-http</code>的配置信息，请使用<code>http adapter</code>
+在<code>data.json</code>文件中填入<code>mirai-api-http</code>的配置信息，请使用<code>http adapter</code>，并确保<code>singleMode</code>为<code>false</code>
 
 ```json
 {
@@ -18,7 +18,7 @@
 
 
 
-由于<code>小鸡词典</code>在访问次数过多后需要登录，请先至[官网](https://jikipedia.com/)注册并登录后获取cookie字符串填入<code>cookie.txt</code>文件中，没有cookie插件将无法运行
+由于<code>小鸡词典</code>在访问次数过多后需要登录，请先至[官网](https://jikipedia.com/)注册并登录后获取cookie字符串填入<code>cookie.txt</code>文件中
 
 
 
@@ -65,8 +65,10 @@ Linux用户可通过执行<code>GengSearch.py</code>脚本运行
 
 ### Linux用户注意事项
 
-Linux用户在运行时可能会出现缺少<code>wkhtmltopdf</code>所需**运行库**的问题
+- 通过<code>pip install lxml</code>指令安装<code>lxml</code>库（已安装的可以跳过此步）
+- 在[wkhtmltopdf官网](https://wkhtmltopdf.org/downloads.html)下载对应系统的<code>rpm</code>文件，并安装至插件目录
+- 确保  **插件目录/wkhtmltopdf/local/bin/wkhtmltoimage** 文件存在
+- 使用<code>chmod 777</code>指令给予**wkhtmltoimage**文件权限
+- 在运行时可能会出现缺少**wkhtmltoimage**所需**运行库**的问题(libxxxx not found)，可以通过<code>yum</code>指令安装缺少的**运行库**
 
-可以通过<code>yum</code>指令安装所需的**运行库**或在[wkhtmltopdf官网](https://wkhtmltopdf.org/downloads.html)下载对应的镜像安装
-
-若出现**文字乱码或方块**的现象，请下载[字体库](https://www.yii666.com/Uploads/wkhtmltopdf_fonts.zip)并解压至**/usr/share/fonts**目录下
+- 若出现**文字乱码或方块**的现象，请下载[字体库](https://www.yii666.com/Uploads/wkhtmltopdf_fonts.zip)并解压至**/usr/share/fonts**目录下
