@@ -7,7 +7,7 @@ import os
 import json
 import traceback
 import platform
-print('Version 1.3.0')
+print('Version 1.3.1')
 
 class platform():
     plat=platform.system()
@@ -15,7 +15,7 @@ class platform():
         if self.plat=='Windows':
             wkimgpath='wkhtmltopdf/bin/wkhtmltoimage.exe'
         else:
-            wkimgpath='wkhtmltopdf/local/bin/wkhtmltoimage'
+            wkimgpath='wkhtmltoimage'
         #print(wkimgpath)
         return wkimgpath
     def imgpath(self):

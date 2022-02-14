@@ -66,8 +66,8 @@ Linux用户可通过执行<code>GengSearch.py</code>脚本运行
 ### Linux用户注意事项
 
 - 通过<code>pip install lxml</code>指令安装<code>lxml</code>库（已安装的可以跳过此步）
-- 在[wkhtmltopdf官网](https://wkhtmltopdf.org/downloads.html)下载对应系统的<code>rpm</code>文件，并安装至插件目录
-- 确保  **插件目录/wkhtmltopdf/local/bin/wkhtmltoimage** 文件存在
+- 在[wkhtmltopdf官网](https://wkhtmltopdf.org/downloads.html)下载对应系统的<code>rpm</code>文件，并安装
+- 将安装好后在**user/local/bin**找到**wkhtmltoimage**文件，并将他移动至目录下
 - 使用<code>chmod 777</code>指令给予**wkhtmltoimage**文件权限
 - 在运行时可能会出现缺少**wkhtmltoimage**所需**运行库**的问题(libxxxx not found)，可以通过<code>yum</code>指令安装缺少的**运行库**
 
