@@ -241,20 +241,23 @@ def Listening(data,seting,blacklist=0):
         #print('not')
         return SearchList
     for i in message:
-        sign=1
-        checktext='none'
-        if i['type']=='GroupMessage':
-            messagechain_list=i['messagechain']
-            messagechain_infodict=messagechain_list[1]
-            if messagechain_infodict['type']=='Plain':
-                checktext=messagechain_infodict['text']
-            if blacklist!=0:
-                for k in blacklist['group']:
-                    if str(k)==str(i['group']):
-                        sign=0
-                for k in blacklist['member']:
-                    if str(k)==str(i['sender']):
-                        sign=0
+        try:
+            sign=1
+            checktext='none'
+            if i['type']=='GroupMessage':
+                messagechain_list=i['messagechain']
+                messagechain_infodict=messagechain_list[1]
+                if messagechain_infodict['type']=='Plain':
+                    checktext=messagechain_infodict['text']
+                if blacklist!=0:
+                    for k in blacklist['group']:
+                        if str(k)==str(i['group']):
+                            sign=0
+                    for k in blacklist['member']:
+                        if str(k)==str(i['sender']):
+                            sign=0
+        except:
+            continue
         for j in tritext['searchtext']:
             if checktext[:len(j)]==j:
                 if control.timegroup(i['group'])<=int(rescontrol['group']) and control.timegroup(i['group'])!=-1 and sign==1:
